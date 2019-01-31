@@ -31,6 +31,12 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+
+// From Forked CRA
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
@@ -55,6 +61,15 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
+
+  // Analysis mode
+  const analysisMode =
+    process.argv.includes('-a') || process.argv.includes('--analysis');
+
+  const smp = new SpeedMeasurePlugin({
+    disable: !analysisMode,
+    outputFormat: 'humanVerbose',
+  });
 
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -123,7 +138,7 @@ module.exports = function(webpackEnv) {
     return loaders;
   };
 
-  return {
+  const config = smp.wrap({
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -654,5 +669,11 @@ module.exports = function(webpackEnv) {
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
     performance: false,
-  };
+  });
+
+  if (analysisMode) {
+    config.plugins.push(new BundleAnalyzerPlugin());
+  }
+
+  return config;
 };

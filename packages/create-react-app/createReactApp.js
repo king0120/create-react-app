@@ -190,7 +190,7 @@ function createApp(
   version,
   useNpm,
   usePnp,
-  useTypescript,
+  useTypescript = true,
   template
 ) {
   const root = path.resolve(name);

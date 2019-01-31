@@ -7,7 +7,11 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Logo_honeywell.svg/2000px-Logo_honeywell.svg.png"
+            className="App-logo"
+            alt="logo"
+          />
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
